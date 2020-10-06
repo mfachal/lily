@@ -1,0 +1,9 @@
+[package]
+name = "hworld"
+version = "0.1.0"
+authors = ["gaucho <gaucho@vepapa.club>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
