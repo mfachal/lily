@@ -3,12 +3,6 @@ use std::net::{TcpListener, TcpStream};
 use std::fs;
 use std::io::{Write, Error, BufReader, BufRead};
 
-
-mod test;
-
-
-
-
 fn getline(stream: &TcpStream) -> String {
 
 	let mut reader = BufReader::new(stream);
@@ -36,6 +30,14 @@ struct Entry {
 	selector: String,
 	hostname: String,
 	port: u16
+}
+
+//this one is for testing only
+impl PartialEq for Entry {
+	fn eq(&self, other: &Entry) -> bool {
+		return self.item_type == other.item_type && self.display_string == other.display_string && 
+		       self.selector == other.selector && self.hostname == other.hostname && self.port == other.port;
+	}
 }
 
 impl fmt::Display for Entry {
@@ -84,7 +86,7 @@ fn update_list(entries: & mut Vec<Entry>){
 
 }
 
-fn handle_client(stream: &TcpStream, mut entries: & mut Vec<Entry>){
+fn handle_client(stream: &TcpStream, entries: & mut Vec<Entry>){
 	let received = getline(& stream);
 	println!("received: {}", received);
 
@@ -96,7 +98,7 @@ fn handle_client(stream: &TcpStream, mut entries: & mut Vec<Entry>){
 		Err(_) => answer(& stream, "gopher.db".to_string()),
 	};
 
-	update_list(& mut entries);
+	update_list(entries);
 
 }
 
@@ -113,4 +115,30 @@ fn main() -> Result<(), Error> {
 		handle_client(&mut stream?, &mut entries);
 	}
 	Ok(())
+}
+
+
+#[cfg(test)]
+mod tests {
+
+	use super::*;
+
+
+	#[test]
+	fn check_update_entries(){
+		let mut vec1: Vec<Entry> = vec![];
+		let entry = Entry {
+			item_type: "a".to_string(),
+			display_string: "a".to_string(),
+			selector: "a".to_string(),
+			hostname: "a".to_string(),
+			port: 0};
+
+		let vec2: Vec<Entry> = vec![entry];
+
+		update_list(&mut vec1);
+
+		assert!(vec1 == vec2);
+	}
+
 }
